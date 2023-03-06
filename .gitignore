@@ -62,4 +62,5 @@ db.sqlite3
 
 # Secrets
 *secret_key.py
+admincredentials.txt
 
