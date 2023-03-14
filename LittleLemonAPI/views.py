@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer
 from rest_framework_csv.renderers import CSVRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import status
 from .models import MenuItem, Category
@@ -9,7 +10,7 @@ from django.shortcuts import get_object_or_404
 
 
 @api_view(['Get','POST'])
-@renderer_classes([CSVRenderer])
+@renderer_classes([CSVRenderer, YAMLRenderer])
 def menu_items(request):
     if request.method == 'GET':
         items = MenuItem.objects.select_related('category').all()
