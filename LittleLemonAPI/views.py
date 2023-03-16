@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
 from rest_framework.decorators import api_view, renderer_classes
@@ -10,10 +10,19 @@ from django.shortcuts import get_object_or_404
 
 
 @api_view(['Get','POST'])
-@renderer_classes([CSVRenderer, YAMLRenderer])
+@renderer_classes([BrowsableAPIRenderer, JSONRenderer, CSVRenderer, YAMLRenderer])
 def menu_items(request):
     if request.method == 'GET':
         items = MenuItem.objects.select_related('category').all()
+        category_name = request.query_params.get('category')
+        to_price = request.query_params.get('to_price')
+        search = request.query_params.get('search')
+        if category_name:
+            items = items.filter(category__title=category_name)
+        if to_price:
+            items = items.filter(price=to_price)
+        if search:
+            items = items.filter(title__icontains=search)
         serialized_item = MenuItemSerializer(items, many=True, context={'request': request})
         return Response(serialized_item.data)
     
