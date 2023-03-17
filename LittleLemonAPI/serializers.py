@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+import bleach
 from .models import MenuItem, Category
 from decimal import Decimal
 
@@ -18,6 +19,9 @@ class MenuItemSerializer(serializers.HyperlinkedModelSerializer):
         max_length=255, 
         validators = [UniqueValidator(queryset=MenuItem.objects.all())]
         )
+
+    def validate_title(self, value):
+        return bleach.clean(value)
     class Meta:
         model = MenuItem
         fields = ['id','title','price','stock','price_after_tax','category','category_id']
