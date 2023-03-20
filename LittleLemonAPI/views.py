@@ -1,3 +1,4 @@
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework_csv.renderers import CSVRenderer
@@ -8,6 +9,12 @@ from .models import MenuItem, Category
 from .serializers import MenuItemSerializer, CategorySerializer
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
+
+class MenuItemsViewset(viewsets.ModelViewSet):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+    ordering_fields = ['price','inventory']
+    search_fields = ['title','category__title']
 
 
 @api_view(['Get','POST'])
@@ -36,7 +43,7 @@ def menu_items(request):
             items = paginator.page(number=page)
         except EmptyPage:
             items = []
-            
+
         serialized_item = MenuItemSerializer(items, many=True, context={'request': request})
         return Response(serialized_item.data)
     
