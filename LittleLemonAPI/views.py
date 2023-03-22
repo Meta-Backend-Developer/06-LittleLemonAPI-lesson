@@ -1,14 +1,15 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
-from rest_framework_csv.renderers import CSVRenderer
-from rest_framework_yaml.renderers import YAMLRenderer
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework import status
-from .models import MenuItem, Category
-from .serializers import MenuItemSerializer, CategorySerializer
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework_csv.renderers import CSVRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
+from rest_framework.decorators import api_view, renderer_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
+from .models import MenuItem, Category
+from .serializers import MenuItemSerializer, CategorySerializer
+
 
 class MenuItemsViewset(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
@@ -77,3 +78,8 @@ def menu(request):
 def welcome(request):
     data = '<html><body><h1>Welcome To Little Lemon API Project</h1></body></html>'
     return Response(data)
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def secret(request):
+    return Response({"message":"Some secret message"})
