@@ -4,11 +4,13 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
-from rest_framework.decorators import api_view, renderer_classes, permission_classes
+from rest_framework.decorators import api_view, renderer_classes, permission_classes, throttle_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
 from .models import MenuItem, Category
 from .serializers import MenuItemSerializer, CategorySerializer
+from .throttles import TenCallsPerMinute
 
 
 class MenuItemsViewset(viewsets.ModelViewSet):
@@ -91,3 +93,14 @@ def manager_view(request):
         return Response({"message":"Only Manager Should See This"})
     else:
         return Response({"message":"You are not authorized"},403)
+
+@api_view()
+@throttle_classes([AnonRateThrottle])
+def throttle_check(request):
+    return Response({"message":"successful"})
+
+@api_view()
+@permission_classes([IsAuthenticated])
+@throttle_classes([TenCallsPerMinute])
+def throttle_check_auth(request):
+    return Response({"message":"message for logged in users only"})
