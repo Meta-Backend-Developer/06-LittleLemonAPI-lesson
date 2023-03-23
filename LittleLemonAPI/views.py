@@ -18,6 +18,7 @@ class MenuItemsViewset(viewsets.ModelViewSet):
     serializer_class = MenuItemSerializer
     ordering_fields = ['price','inventory']
     search_fields = ['title','category__title']
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
 
 @api_view(['Get','POST'])
