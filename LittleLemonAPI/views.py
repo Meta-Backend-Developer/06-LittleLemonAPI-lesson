@@ -18,7 +18,13 @@ class MenuItemsViewset(viewsets.ModelViewSet):
     serializer_class = MenuItemSerializer
     ordering_fields = ['price','inventory']
     search_fields = ['title','category__title']
-    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    
+    def get_throttles(self):
+        if self.action == 'create':
+            throttle_classes = [UserRateThrottle]
+        else:
+            throttle_classes = []
+        return [throttle() for throttle in throttle_classes]
 
 
 @api_view(['Get','POST'])
