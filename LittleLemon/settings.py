@@ -42,8 +42,6 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "LittleLemonAPI",
     "djoser",
-    "rest_framework_simplejwt",
-    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -157,8 +155,4 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'USER_ID_FIELD':'username'
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=5),
 }
