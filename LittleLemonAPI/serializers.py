@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 import bleach
-from .models import MenuItem, Category
 from decimal import Decimal
+from django.contrib.auth.models import User
+from .models import MenuItem, Category, Rating
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,3 +30,15 @@ class MenuItemSerializer(serializers.HyperlinkedModelSerializer):
     def calculate_tax(self, product:MenuItem):
         return product.price * Decimal(1.1)
     
+
+class RatingSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset = User.objects.all(),
+        default = serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Rating
+        fields = ['user','menuitem_id','rating']
+        validators = [UniqueTogetherValidator(queryset=Rating.objects.all(), fields = ['user','menuitem_id','rating'])]
+        extra_kwargs = {'rating':{'max_value':5, 'min_value':0},}

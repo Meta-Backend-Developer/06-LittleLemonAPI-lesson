@@ -9,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
 from django.contrib.auth.models import User, Group
-from .models import MenuItem, Category
-from .serializers import MenuItemSerializer, CategorySerializer
+from .models import MenuItem, Category, Rating
+from .serializers import MenuItemSerializer, CategorySerializer, RatingSerializer
 from .throttles import TenCallsPerMinute
 
 
@@ -20,6 +20,19 @@ class MenuItemsViewset(viewsets.ModelViewSet):
     ordering_fields = ['price','inventory']
     search_fields = ['title','category__title']
 
+
+class RatingsView(viewsets.ModelViewSet):
+    # TODO: download class definition from https://www.coursera.org/learn/apis/supplement/sIhjD/exercise-user-account-management
+    # The download link was unavailable on 27 Mar 23
+
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return []
+        return [IsAuthenticated()]
+    
 
 @api_view(['Get','POST'])
 @renderer_classes([BrowsableAPIRenderer, JSONRenderer, CSVRenderer, YAMLRenderer])
