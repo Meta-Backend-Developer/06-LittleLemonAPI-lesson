@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
@@ -13,7 +13,6 @@ from .models import MenuItem, Category, Rating
 from .serializers import MenuItemSerializer, CategorySerializer, RatingSerializer
 from .throttles import TenCallsPerMinute
 
-
 class MenuItemsViewset(viewsets.ModelViewSet):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
@@ -21,7 +20,7 @@ class MenuItemsViewset(viewsets.ModelViewSet):
     search_fields = ['title','category__title']
 
 
-class RatingsView(viewsets.ModelViewSet):
+class RatingsView(generics.ListCreateAPIView):
     # TODO: download class definition from https://www.coursera.org/learn/apis/supplement/sIhjD/exercise-user-account-management
     # The download link was unavailable on 27 Mar 23
 
